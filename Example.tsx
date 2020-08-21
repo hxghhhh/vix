@@ -77,7 +77,7 @@ nodes.forEach((n) => {
     console.log("target", userDict[vert]);
     links.push({
       source: n,
-      target: userDict[linkMapping[vert]]
+      target: userDict[vert]
     });
   });
 });
