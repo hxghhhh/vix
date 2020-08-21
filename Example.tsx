@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Graph } from "@vx/network";
 import { useTooltip, Tooltip, defaultStyles } from "@vx/tooltip";
 import { localPoint } from "@vx/event";
+import { Link } from "@primer/components";
 import { randomNormal } from "d3-random";
 import mock from "../data.json";
 
@@ -42,8 +43,8 @@ let userDict = {};
 mock.data.forEach((element) => {
   userDict[element.username] = {
     username: element.username,
-    x: Math.floor(Math.random() * Math.floor(1000)),
-    y: Math.floor(Math.random() * Math.floor(1000))
+    x: Math.floor(Math.random() * Math.floor(1000)) / 2,
+    y: Math.floor((Math.random() * Math.floor(1000)) / 2)
   };
 });
 
@@ -163,18 +164,15 @@ export default function Example({ width, height }: NetworkProps) {
           nodeComponent={() => (
             <circle
               r={15}
-              fill="#3AB795"
-              onClick={() => hideTooltip()}
+              fill="#3B60E4"
               onMouseOut={() => {
-                tooltipTimeout = window.setTimeout(() => {
-                  hideTooltip();
-                }, 300);
+                tooltipTimeout = window.setTimeout(() => {}, 500);
               }}
               onMouseEnter={(event) => {
                 if (tooltipTimeout) clearTimeout(tooltipTimeout);
                 const coords = localPoint(event);
                 nodes.map((n) => {
-                  if (checkPoint(n.x, n.y, coords.x, coords.y, 100)) {
+                  if (checkPoint(n.x, n.y, coords.x, coords.y, 50)) {
                     showTooltip({
                       tooltipLeft: coords.x,
                       tooltipTop: coords.y,
@@ -192,7 +190,7 @@ export default function Example({ width, height }: NetworkProps) {
               x2={link.target.x}
               y2={link.target.y}
               strokeWidth={2}
-              stroke="#FF7E6B"
+              stroke="#C8ADC0"
               strokeOpacity={0.6}
             />
           )}
@@ -200,7 +198,7 @@ export default function Example({ width, height }: NetworkProps) {
       </svg>
       {tooltipOpen && tooltipData && (
         <Tooltip left={tooltipLeft} top={tooltipTop}>
-          <div>{JSON.stringify(tooltipData)}</div>
+          @{tooltipData.username}
         </Tooltip>
       )}
     </>
