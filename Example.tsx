@@ -22,74 +22,52 @@ type TooltipData = {
 
 let tooltipTimeout: number;
 
-// const nodes = mock.data.map((n) => {
-//   return {
-//     x: Math.floor(Math.random() * 2000 - 100),
-//     y: Math.floor(Math.random() * 2000 - 100),
-//     nodeValue: n
-//   };
-// });
-
-let initialValue = {};
-let key = "username";
-let userDict = mock.data.reduce((obj, item) => {
+let nodes = mock.data.map((n) => {
   return {
-    ...obj,
-    [item[key]]: { source: item.username, target: item.username }
-  };
-}, initialValue);
-
-key = "slug_id";
-let contentDict = mock.data.reduce((obj, item) => {
-  return {
-    ...obj,
-    [item[key]]: { source: item.slug_id, target: item.username }
-  };
-}, initialValue);
-
-const graphdb = {
-  ...userDict,
-  ...contentDict
-};
-
-var nodes = Object.entries(graphdb).map((n) => {
-  return {
-    x: Math.floor(Math.random() * 2000 - 100),
-    y: Math.floor(Math.random() * 2000 - 100),
-    nodeVale: n[1]
+    ...n,
+    x: Math.floor(Math.random() * Math.floor(1000)),
+    y: Math.floor(Math.random() * Math.floor(1000))
   };
 });
 
-// let links = Object.entries(graphdb).map((n) => {
-//   return {
-//     source: graphdb[n[1].source],
-//     target: graphdb[n[1].target]
-//   };
-// });
+let linkMapping = {};
+let countMapping = {};
+nodes.forEach((n) => {
+  //countMapping[`${n.username}-${j.username}`] = 0;
+  nodes.forEach((j) => {
+    if (n.slug_id === j.slug_id && n.username !== j.username) {
+      linkMapping[n.username] = j.username;
+      if (!(`${n.username}${j.username}` in countMapping)) {
+        countMapping[`${n.username}${j.username}`] = 0;
+      } else {
+        countMapping[`${n.username}${j.username}`]++;
+      }
+    }
+  });
+});
 
-// let links = nodes.map(n => {
-//   return {
-//         source: graphdb[n.source],
-//         target: graphdb[n.target]
-//       };
-// })
+console.log(countMapping);
 
-console.log(nodes);
+// create dictionary of username -> node
+var nodeMapping = nodes.reduce((map, obj) => {
+  map[obj.username] = obj;
+  return map;
+}, {});
 
-const links = [
-  { source: nodes[0], target: nodes[1] },
-  { source: nodes[1], target: nodes[2] },
-  { source: nodes[2], target: nodes[0] }
-];
-
-//const links = conn
+// generate links for current node to source
+const links = nodes.map((n) => {
+  return {
+    source: n,
+    target: nodeMapping[linkMapping[n.username]]
+  };
+});
 
 const graph = {
   nodes,
   links
 };
 
-export const background = "#1a1a1a";
+export const background = "#FFFFFF";
 
 function checkPoint(a, b, x, y, r) {
   var dist_points = (a - x) * (a - x) + (b - y) * (b - y);
@@ -118,7 +96,7 @@ export default function Example({ width, height }: NetworkProps) {
           nodeComponent={() => (
             <circle
               r={15}
-              fill="#c7ac75"
+              fill="#3AB795"
               onClick={() => hideTooltip()}
               onMouseOut={() => {
                 tooltipTimeout = window.setTimeout(() => {
@@ -147,7 +125,7 @@ export default function Example({ width, height }: NetworkProps) {
               x2={link.target.x}
               y2={link.target.y}
               strokeWidth={2}
-              stroke="#FFFFFF"
+              stroke="#FF7E6B"
               strokeOpacity={0.6}
             />
           )}
